@@ -1,0 +1,204 @@
+// Include theming for Angular Material with `mat.theme()`.
+// This Sass mixin will define CSS variables that are used for styling Angular Material
+// components according to the Material 3 design spec.
+// Learn more about theming and how to use it for your application's
+// custom components at https://material.angular.dev/guide/theming
+@use '@angular/material' as mat;
+
+html {
+  height: 100%;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$orange-palette,
+        tertiary: mat.$red-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+}
+
+body {
+  // Default the application to a light color theme. This can be changed to
+  // `dark` to enable the dark color theme, or to `light dark` to defer to the
+  // user's system settings.
+  color-scheme: light;
+
+  // Set a default background, font and text colors for the application using
+  // Angular Material's system-level CSS variables. Learn more about these
+  // variables at https://material.angular.dev/guide/system-variables
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+
+  // Reset the user agent margin.
+  margin: 0;
+  height: 100%;
+}
+/* You can add global styles to this file, and also import other style files */
+
+// ---------- Untoque ----------
+* { box-sizing: border-box; }
+h1 { font: var(--mat-sys-headline-small); margin: 8px 0 16px; }
+h2 { font: var(--mat-sys-title-medium); margin: 0 0 8px; }
+a { color: var(--mat-sys-primary); }
+
+.marca { font-weight: 700; color: var(--mat-sys-primary); letter-spacing: -0.5px; }
+.spacer { flex: 1 1 auto; }
+.col { display: flex; flex-direction: column; gap: 8px; }
+.fila { display: flex; gap: 12px; flex-wrap: wrap; > * { flex: 1 1 140px; } }
+.fila.centrado { align-items: center; > * { flex: 0 0 auto; } }
+.fila.envolver { flex-wrap: wrap; }
+.acciones { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+.ayuda { color: var(--mat-sys-on-surface-variant); font: var(--mat-sys-body-small); margin: 0 0 12px; }
+.etiqueta { font: var(--mat-sys-label-large); margin-top: 8px; }
+.error { color: var(--mat-sys-error); }
+.vacio { color: var(--mat-sys-on-surface-variant); text-align: center; padding: 16px; }
+.sub { color: var(--mat-sys-on-surface-variant); font: var(--mat-sys-body-small); }
+.negativo { color: var(--mat-sys-error); }
+
+// Login
+.login-wrap { min-height: 100vh; display: grid; place-items: center; padding: 16px;
+  background: linear-gradient(135deg, var(--mat-sys-primary-container), var(--mat-sys-surface)); }
+.login-card { width: 100%; max-width: 380px; }
+.login-card .marca { font-size: 2rem; }
+.login-card form { margin-top: 16px; }
+
+// Layout admin
+.shell { height: 100vh; }
+.shell-nav { width: 240px; }
+.nav-marca { font-size: 1.6rem; padding: 20px 16px 8px; }
+.shell-nav .activo { background: var(--mat-sys-secondary-container); }
+.topbar { position: sticky; top: 0; z-index: 2; background: var(--mat-sys-surface-container); gap: 8px; }
+.topbar .usuario { font: var(--mat-sys-body-medium); }
+.page { padding: 16px; max-width: 1400px; margin: 0 auto; }
+@media (max-width: 600px) { .topbar .usuario { display: none; } }
+
+// Formulario + lista
+.dos-columnas { display: grid; grid-template-columns: minmax(280px, 400px) 1fr; gap: 16px; align-items: start; }
+.dos-columnas.ancho { grid-template-columns: 1fr minmax(300px, 400px); }
+@media (max-width: 900px) { .dos-columnas, .dos-columnas.ancho { grid-template-columns: 1fr; } }
+.lista { display: flex; flex-direction: column; gap: 8px; }
+.item { padding: 12px 16px; }
+.item.inactivo { opacity: 0.55; }
+.item-fila { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.mini { width: 48px; height: 48px; object-fit: cover; border-radius: 8px; }
+.mini-icono { width: 48px; height: 48px; font-size: 32px; display: grid; place-items: center; color: var(--mat-sys-primary); }
+.banner { width: 100%; max-height: 180px; object-fit: cover; border-radius: 8px; margin-bottom: 8px; }
+.banner-mini { height: 56px; border-radius: 6px; }
+
+.chip { display: inline-block; padding: 2px 8px; margin-left: 6px; border-radius: 12px; font: var(--mat-sys-label-small);
+  background: var(--mat-sys-surface-container-highest); color: var(--mat-sys-on-surface-variant); vertical-align: middle; }
+.chip-ok { background: #d7f5dd; color: #1b5e20; }
+.estado-creado, .estado-rechazado { background: #ffe0b2; color: #8a4b00; }
+.estado-rechazado { background: #ffcdd2; color: #b71c1c; }
+.estado-enviado_negocio { background: #e1f5fe; color: #01579b; }
+.estado-aceptado, .estado-en_preparacion { background: #fff9c4; color: #6d5d00; }
+.estado-domiciliario_asignado, .estado-recogido { background: #e8eaf6; color: #283593; }
+.estado-entregado { background: #d7f5dd; color: #1b5e20; }
+
+// Nuevo pedido
+.producto-fila { display: flex; align-items: center; gap: 4px; padding: 4px 0; border-bottom: 1px solid var(--mat-sys-outline-variant); }
+.cantidad { min-width: 24px; text-align: center; font-weight: 600; }
+.resumen { position: sticky; top: 80px; }
+.linea { display: flex; justify-content: space-between; gap: 8px; padding: 3px 0; }
+.linea.total { font-weight: 600; }
+.linea.ganancia { color: var(--mat-sys-primary); font-size: 1.1em; }
+hr { border: 0; border-top: 1px solid var(--mat-sys-outline-variant); margin: 8px 0; }
+
+// Tablero de pedidos
+.tablero { display: grid; grid-template-columns: repeat(4, minmax(260px, 1fr)); gap: 12px; overflow-x: auto; padding-bottom: 8px; }
+@media (max-width: 1100px) { .tablero { grid-template-columns: 1fr; } }
+.columna { background: var(--mat-sys-surface-container-low); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.contador { font: var(--mat-sys-label-medium); background: var(--mat-sys-primary); color: var(--mat-sys-on-primary); border-radius: 10px; padding: 0 8px; }
+.pedido { padding: 12px; }
+.pedido.alerta { outline: 2px solid var(--mat-sys-error); }
+.pedido .cliente { margin: 8px 0 4px; font: var(--mat-sys-body-small); }
+.pedido .items { margin: 4px 0; padding-left: 18px; }
+.pedido .notas { font: var(--mat-sys-body-small); background: var(--mat-sys-surface-container); padding: 4px 8px; border-radius: 6px; }
+
+// Cuentas
+.tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.kpi { padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
+.kpi span { font: var(--mat-sys-label-medium); color: var(--mat-sys-on-surface-variant); }
+.kpi strong { font: var(--mat-sys-title-large); }
+.kpi.destacado { background: var(--mat-sys-primary-container); }
+.kpi.destacado strong { color: var(--mat-sys-on-primary-container); }
+.kpi.negativo strong { color: var(--mat-sys-error); }
+.tabla-scroll { overflow-x: auto; }
+.tabla { width: 100%; border-collapse: collapse; margin-top: 8px; font: var(--mat-sys-body-medium); }
+.tabla th, .tabla td { text-align: left; padding: 8px; border-bottom: 1px solid var(--mat-sys-outline-variant); white-space: nowrap; }
+.tabla th { font: var(--mat-sys-label-large); color: var(--mat-sys-on-surface-variant); }
+input[type='date'] { font: inherit; padding: 6px; margin-left: 4px; }
+
+// Panel del emprendimiento
+.titulo-panel { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.aviso-activar { display: flex; align-items: center; gap: 12px; padding: 12px 16px; margin-bottom: 12px; flex-wrap: wrap;
+  background: var(--mat-sys-tertiary-container); color: var(--mat-sys-on-tertiary-container); }
+.aviso-activar.cerrado { background: var(--mat-sys-error-container); color: var(--mat-sys-on-error-container); }
+.grid-pedidos { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.pedido.nuevo { outline: 3px solid var(--mat-sys-primary); animation: latido 1.5s ease-in-out infinite; }
+.pedido.listo { outline: 2px solid #2e7d32; }
+.items.grande { font-size: 1.1em; line-height: 1.6; }
+.notas.motivo { background: var(--mat-sys-error-container); color: var(--mat-sys-on-error-container); margin-top: 4px; }
+@keyframes latido { 50% { outline-color: transparent; } }
+
+// Panel del domiciliario
+.entrega .numero { font-size: 1.3em; }
+.paso { border-left: 3px solid var(--mat-sys-primary); padding: 4px 0 4px 12px; margin: 12px 0; }
+.paso.hecho { opacity: 0.5; border-left-color: var(--mat-sys-outline); }
+.paso h3 { font: var(--mat-sys-title-small); margin: 0 0 4px; }
+.botones-ruta { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.cobro { background: #fff3e0; color: #8a4b00; padding: 10px 12px; border-radius: 8px; margin: 8px 0; font-size: 1.05em; }
+.cobro strong { font-size: 1.25em; }
+.cobro.pagado { background: #d7f5dd; color: #1b5e20; }
+button.grande { min-height: 48px; font-size: 1.05em; flex: 1; }
+
+// Web del cliente
+.cliente-barra .logo { font-size: 1.5rem; text-decoration: none; }
+.tienda-page { padding: 16px; max-width: 1100px; margin: 0 auto; min-height: calc(100vh - 120px); }
+.pie { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 16px; font: var(--mat-sys-body-small);
+  color: var(--mat-sys-on-surface-variant); border-top: 1px solid var(--mat-sys-outline-variant); }
+.saludo { margin-top: 16px; }
+.buscador { width: 100%; }
+.categorias { display: block; margin: 8px 0 16px; }
+.centrado-h { justify-content: center; }
+
+.carrusel { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 12px; border-radius: 16px; scrollbar-width: none; }
+.carrusel::-webkit-scrollbar { display: none; }
+.slide { flex: 0 0 100%; scroll-snap-align: start; position: relative; border-radius: 16px; overflow: hidden; aspect-ratio: 3 / 1; min-height: 140px; }
+.slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.slide-texto { position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 16px; color: #fff; font: var(--mat-sys-title-medium);
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.65)); }
+
+.grid-tiendas { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.tienda-card { display: flex; gap: 12px; align-items: center; padding: 12px; border-radius: 16px; text-decoration: none; color: inherit;
+  background: var(--mat-sys-surface-container-low); transition: transform 0.15s; }
+.tienda-card:hover { transform: translateY(-2px); background: var(--mat-sys-surface-container); }
+.tienda-card.cerrada { opacity: 0.55; }
+.tienda-card img, .sin-logo { width: 64px; height: 64px; border-radius: 12px; object-fit: cover; flex: none; }
+.sin-logo { display: grid; place-items: center; background: var(--mat-sys-primary-container); color: var(--mat-sys-on-primary-container); }
+.tienda-info { display: flex; flex-direction: column; gap: 2px; align-items: flex-start; }
+.tienda-info .chip { margin-left: 0; }
+
+.tienda-cabecera { display: flex; gap: 16px; align-items: center; margin: 8px 0 16px; }
+.tienda-cabecera img { width: 80px; height: 80px; border-radius: 16px; object-fit: cover; }
+.tienda-cabecera h1 { margin: 0; }
+.grid-productos { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; padding-bottom: 80px; }
+.producto-card { display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 16px; background: var(--mat-sys-surface-container-low); }
+.producto-card img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 12px; }
+.producto-info { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.precio { font: var(--mat-sys-title-medium); color: var(--mat-sys-primary); }
+.contador-producto { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.barra-carrito { position: fixed !important; left: 16px; right: 16px; bottom: 16px; max-width: 600px; margin: 0 auto; height: 52px !important;
+  font-size: 1.05rem; z-index: 5; box-shadow: var(--mat-sys-level3); }
+
+.seguimiento { padding: 8px 16px 16px; margin-bottom: 12px; }
+.pasos { list-style: none; padding: 0; margin: 16px 0; display: flex; flex-direction: column; gap: 14px; }
+.pasos li { display: flex; align-items: center; gap: 12px; color: var(--mat-sys-outline); }
+.pasos li.hecho { color: var(--mat-sys-on-surface); }
+.pasos li.hecho mat-icon { color: #2e7d32; }
+.pasos li.actual { color: var(--mat-sys-primary); font-weight: 600; }
+.detalle-pedido { margin-bottom: 12px; }
+.item-link { text-decoration: none; color: inherit; }

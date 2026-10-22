@@ -1,0 +1,107 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function autenticado() { return request.auth != null; }
+    function perfil() { return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data; }
+    function tieneRol(rol) {
+      return autenticado()
+        && exists(/databases/$(database)/documents/usuarios/$(request.auth.uid))
+        && perfil().activo == true
+        && perfil().rol == rol;
+    }
+    function esAdmin() { return tieneRol('admin'); }
+    function esDuenoNegocio(negocioId) { return tieneRol('negocio') && perfil().negocioId == negocioId; }
+    function soloCambia(campos) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(campos);
+    }
+
+    match /usuarios/{uid} {
+      allow read: if esAdmin() || (autenticado() && request.auth.uid == uid);
+      allow write: if esAdmin();
+      // El domiciliario puede marcarse disponible / no disponible.
+      allow update: if tieneRol('domiciliario') && request.auth.uid == uid && soloCambia(['disponible']);
+    }
+
+    match /zonas/{id} {
+      allow read: if true;
+      allow write: if esAdmin();
+    }
+
+    match /negocios/{negocioId} {
+      allow read: if true;
+      allow write: if esAdmin();
+      // El emprendimiento puede abrir / cerrar su local.
+      allow update: if esDuenoNegocio(negocioId) && soloCambia(['abierto']);
+
+      match /productos/{productoId} {
+        allow read: if true;
+        allow write: if esAdmin() || esDuenoNegocio(negocioId);
+      }
+    }
+
+    match /publicidad/{id} {
+      allow read: if resource.data.aprobada == true || esAdmin() || esDuenoNegocio(resource.data.negocioId);
+      allow write: if esAdmin();
+      // El emprendimiento sube su banner, queda pendiente de aprobación.
+      allow create: if esDuenoNegocio(request.resource.data.negocioId) && request.resource.data.aprobada == false;
+      allow delete: if esDuenoNegocio(resource.data.negocioId);
+    }
+
+    // Pedido hecho desde la web por un cliente (sesión anónima). El admin recalcula
+    // precios y cuentas al enviarlo al emprendimiento, así que aquí solo se valida la forma.
+    function pedidoWebValido() {
+      let d = request.resource.data;
+      return autenticado()
+        && d.origen == 'web' && d.estado == 'creado'
+        && d.clienteUid == request.auth.uid
+        && d.domiciliarioId == null
+        && d.liquidacionNegocioId == null && d.liquidacionDomiciliarioId == null
+        && d.items is list && d.items.size() > 0 && d.items.size() <= 50
+        && exists(/databases/$(database)/documents/negocios/$(d.negocioId))
+        && exists(/databases/$(database)/documents/zonas/$(d.zonaId))
+        && d.numero == getAfter(/databases/$(database)/documents/contadores/pedidos).data.ultimo;
+    }
+
+    match /pedidos/{id} {
+      allow read: if esAdmin()
+        || esDuenoNegocio(resource.data.negocioId)
+        || (tieneRol('domiciliario') && resource.data.domiciliarioId == request.auth.uid)
+        || (autenticado() && resource.data.get('clienteUid', null) == request.auth.uid);
+      allow create: if esAdmin() || pedidoWebValido();
+      allow delete: if esAdmin();
+      allow update: if esAdmin()
+        // El cliente puede cancelar mientras el pedido no se haya enviado al emprendimiento.
+        || (autenticado() && resource.data.get('clienteUid', null) == request.auth.uid
+            && resource.data.estado == 'creado' && request.resource.data.estado == 'cancelado'
+            && soloCambia(['estado', 'historial']))
+        // El emprendimiento acepta/rechaza lo que le enviaron, lo pone en preparación y avisa que está listo.
+        || (esDuenoNegocio(resource.data.negocioId)
+            && soloCambia(['estado', 'historial', 'listo', 'motivoRechazo'])
+            && (request.resource.data.estado == resource.data.estado
+                || (resource.data.estado == 'enviado_negocio' && request.resource.data.estado in ['aceptado', 'rechazado'])
+                || (resource.data.estado == 'aceptado' && request.resource.data.estado == 'en_preparacion')))
+        // El domiciliario asignado marca recogido y luego entregado.
+        || (tieneRol('domiciliario') && resource.data.domiciliarioId == request.auth.uid
+            && soloCambia(['estado', 'historial'])
+            && ((resource.data.estado == 'domiciliario_asignado' && request.resource.data.estado == 'recogido')
+                || (resource.data.estado == 'recogido' && request.resource.data.estado == 'entregado')));
+    }
+
+    // Consecutivo de pedidos: cualquiera con sesión puede sumarle exactamente 1 al crear un pedido.
+    match /contadores/{id} {
+      allow read: if autenticado();
+      allow create: if esAdmin() || (autenticado() && request.resource.data.ultimo == 1);
+      allow update: if esAdmin()
+        || (autenticado() && request.resource.data.ultimo == resource.data.ultimo + 1);
+    }
+
+    match /liquidaciones/{id} {
+      allow read: if esAdmin()
+        || (resource.data.tipo == 'negocio' && esDuenoNegocio(resource.data.entidadId))
+        || (resource.data.tipo == 'domiciliario' && tieneRol('domiciliario') && resource.data.entidadId == request.auth.uid);
+      allow write: if esAdmin();
+    }
+  }
+}
